@@ -2,13 +2,16 @@
 
 #####User Category Definitions
 
-* **Site Admin** - Responsible for administering the site and adding/removing admins, configuring secrets, and monitoring site status and health.
+* **Site Admin** - Administers the site, adds and removes admins, configuring secrets, and monitors site status and health.
 
 * **Admin** - Responsible for adding removing CCE events and managing event participants.
 
-* **Facilitator** - Responsible for running the CCE, managing and presenting results, and editing data if required.
+* **Facilitator** - Runs the CCE, manages and presents results, edits data, sets and remove timers, and determines group participants.
+
+* **Analyst** - Full access to CCE data, minus user data protected by privacy guidelines, to export and analyze.
 
 * **User** - Participates in CCEs they have been invited to by submitting limitations, feedback, surveys, and other data to the facilitator. 
+
 
 #####Draft Use Cases
 
