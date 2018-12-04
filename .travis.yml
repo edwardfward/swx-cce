@@ -1,0 +1,11 @@
+language: go
+env:
+  - GO111Module=on
+go:
+  - 1.11.x
+git:
+  depth: 1
+branches:
+  only:
+    - master
+install: true
