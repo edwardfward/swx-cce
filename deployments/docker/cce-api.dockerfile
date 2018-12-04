@@ -15,7 +15,6 @@ ENV DB_PORT=""
 
 RUN git clone --depth=1 --branch=master ${APP_ENV_REPO} /go/src/app
 WORKDIR /go/src/app
-RUN ls -al cmd/
 
 RUN go install -v cmd/cceapp.go
 
