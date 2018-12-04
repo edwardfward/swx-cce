@@ -4,21 +4,22 @@
 # use the latest version of golang
 FROM golang:stretch
 
+ARG APP_REPO=""
+
 ENV GOBIN="/go/src/app"
+ENV APP_ENV_REPO=https://${APP_REPO}
 ENV DB_URL=""
 ENV DB_USERNAME=""
 ENV DB_PASSWORD=""
 ENV DB_PORT=""
 
+RUN git clone --depth=1 --branch=master ${APP_ENV_REPO} /go/src/app
 WORKDIR /go/src/app
+RUN ls -al cmd/
 
-RUN apt-get update -y && apt-get upgrade -y && apt-get install ca-certificates git
-RUN git clone --depth=1 --branch=master https://github.com/edwardfward/swx-cce .
+RUN go install -v cmd/cceapp.go
 
-RUN go get -d -v cmd/cce-server.go
-RUN go install -v cmd/cce-server.go
-
-CMD ["./cce-server"]
+CMD ["./cceapp"]
 
 
 
