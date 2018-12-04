@@ -36,4 +36,6 @@
 * [JSON Schemas](http://json-schema.org/)
 * [JSON Web Tokens](https://jwt.io/)
 * [Go JSON Schema](https://github.com/xeipuuv/gojsonschema)
+* [NGINX Ingress Controller for Kubernetes](https://www.nginx.com/products/nginx/kubernetes-ingress-controller)
+* [Kubernetes Best Practices](https://kubernetes.io/docs/concepts/configuration/overview/)
 

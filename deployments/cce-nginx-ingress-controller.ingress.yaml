@@ -1,0 +1,25 @@
+---
+# Reference: https://www.nginx.com/products/nginx/kubernetes-ingress-controller
+
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: cce-ingress-dev
+  labels:
+    app: cce-dev
+    phase: dev
+    tier: ingress
+    deployment: v0
+spec:
+  tls:
+    - hosts:
+      - {{ cce_hosts }}
+      secretName: cce-ingress-secret  # todo create .secret/cce-ingress-secret
+  rules:
+    - host: {{ cce_hosts }}
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: cce-front-end-service
+              servicePort: 80

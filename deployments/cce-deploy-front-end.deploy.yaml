@@ -1,0 +1,15 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cce-deployment-dev
+  labels:
+    app: cce
+    phase: dev
+    tier: deployment
+    deployment: v0
+spec:
+  replicas: 10
+  selector:
+    matchLabels:
+      app: cce-dev

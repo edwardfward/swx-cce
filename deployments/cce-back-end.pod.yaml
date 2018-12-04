@@ -4,8 +4,10 @@ kind: Pod
 metadata:
   name: cce-backend
   labels:
-    app: cce-backend
-    stage: dev
+    app: cce-dev
+    phase: dev
+    tier: backend
+    deployment: v0
 spec:
   containers:
     - name: cce-postgres
@@ -26,3 +28,6 @@ spec:
             secretKeyRef:
               name: sofwerx-cce-secrets
               key: postgres_cert
+  volumes:
+    - name: cce-data
+
