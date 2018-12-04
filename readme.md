@@ -1,11 +1,11 @@
-#### SOFWERX CCE
+## SOFWERX CCE
 
-##### Stack Description 
+### Stack Description 
 
 * Front End - HTML5, JavaScript
 * Back End - Go, NGINX, PostgreSQL, Docker, Kubernetes, Linux/OS
 
-##### User Category Definitions
+### User Category Definitions
 
 * **Site Admin** - Administers the site, adds and removes admins, configuring secrets, and monitors site status and health.
 
@@ -18,7 +18,7 @@
 * **User** - Participates in CCEs they have been invited to by submitting limitations, feedback, surveys, and other data to the facilitator. 
 
 
-##### Draft Use Cases
+### Draft Use Cases
 
 1. User opens a web browser on a desktop or mobile device and goes to the `cce.sofwerx.org` app to create a user account or authenticate with OAuth2, username and password, or via a one-time magic link sent to the user's validated email account.
 
@@ -30,7 +30,7 @@
 
 5. Facilitator goes to `cce.sofwerx.org/run/{cce title}` to view the CCE's facilitator dashboard for the event. Facilitators must be designated by an admin and authenticate via valid JWT, OAuth2, username and password, or one-time magic link sent to the facilitator's email.
 
-##### References
+### References
 
 * [The Twelve-Factor App](https://12factor.net/)
 * [JSON Schemas](http://json-schema.org/)
