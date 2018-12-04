@@ -32,3 +32,8 @@ services:
         cce.app.phase: "dev"
         ccc.app.version: "v0.0"
     restart: always
+    environment:
+      DB_URL: ${CCE_DB_URL}
+      DB_USERNAME: ${CCE_DB_USERNAME}
+      DB_PASSWORD: ${CCE_DB_PASSWORD}
+      DB_PORT: ${CCE_DB_PORT}
