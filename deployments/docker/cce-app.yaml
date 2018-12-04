@@ -3,11 +3,32 @@ version: '3.1'
 services:
 
   cce-db:
-    image: cce-db
+    build:
+      context: .
+      dockerfile: cce-db.dockerfile
+      args:
+        - POSTGRES_PASSWORD
+        - POSTGRES_USER
+        - PGDATA
+        - POSTGRES_DB
+        - POSTGRES_INITDB_WALDIR
+      labels:
+        cce.app.description: "CCE PostgreSQL database back-end"
+        cce.app.phase: "dev"
+        cce.app.version: "v0.0"
     restart: always
-    environment:
-      POSTGRES_PASSWORD:
+
   cce-app:
-    image: cce-api
+    build:
+      context: .
+      dockerfile: cce-api.dockerfile
+      args:
+        - DATABASE_URL
+        - DATABASE_PORT
+        - DATABASE_USERNAME
+        - DATABASE_PASSWORD
+      labels:
+        cce.app.description: "CCE Go API front-end"
+        cce.app.phase: "dev"
+        ccc.app.version: "v0.0"
     restart: always
-    environment:
