@@ -1,0 +1,13 @@
+version: '3.1'
+
+services:
+
+  cce-db:
+    image: cce-db
+    restart: always
+    environment:
+      POSTGRES_PASSWORD:
+  cce-app:
+    image: cce-api
+    restart: always
+    environment:
