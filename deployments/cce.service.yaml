@@ -1,0 +1,17 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: cce-service
+spec:
+  selector:
+    app: cce-front-end
+  ports:
+  - name: http
+    protocol: TCP
+    port: 80
+    targetport: 80
+  - name: https
+    protocol: TCP
+    port: 443
+    targetport: 443

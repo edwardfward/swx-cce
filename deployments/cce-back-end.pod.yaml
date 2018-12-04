@@ -1,0 +1,28 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cce-backend
+  labels:
+    app: cce-backend
+    stage: dev
+spec:
+  containers:
+    - name: cce-postgres
+      image: postgres:latest
+      env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: sofwerx-cce-secrets
+              key: postgres_password
+        - name: POSTGRES_PORT
+          valueFrom:
+            secretKeyRef:
+              name: sofwerx-cce-secrets
+              key: postgres_port
+        - name: POSTGRES_CERT
+          valueFrom:
+            secretKeyRef:
+              name: sofwerx-cce-secrets
+              key: postgres_cert

@@ -1,0 +1,13 @@
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: cce-front-end
+  labels:
+    app: cce-front-end
+    stage: dev
+spec:
+  containers:
+    - name: cce-nginx
+    - name: cce-app
+    - name: cce-git
