@@ -1,5 +1,10 @@
 #### SOFWERX CCE
 
+#####Stack Description 
+
+* Front End - HTML5, JavaScript
+* Back End - Go, NGINX, PostgreSQL, Docker, Kubernetes, Linux/OS
+
 #####User Category Definitions
 
 * **Site Admin** - Administers the site, adds and removes admins, configuring secrets, and monitors site status and health.
@@ -24,3 +29,11 @@
 4. User receives a link to CCE via email or invite and clicks a link to `cce.sofwerx.org/{cce title}`. If the user's secure JSON Web Token ([JWT](https://jwt.io/)) is invalid, the user will be directed to the logon page to create an account or authenticate. Once the user successfully authenticates, they will be redirected to the original `cce.sofwerx.org/{cce title}` page, but only if the admin has invited or added the user to the CCE.
 
 5. Facilitator goes to `cce.sofwerx.org/run/{cce title}` to view the CCE's facilitator dashboard for the event. Facilitators must be designated by an admin and authenticate via valid JWT, OAuth2, username and password, or one-time magic link sent to the facilitator's email.
+
+#####References
+
+* [The Twelve-Factor App](https://12factor.net/)
+* [JSON Schemas](http://json-schema.org/)
+* [JSON Web Tokens](https://jwt.io/)
+* [Go JSON Schema](https://github.com/xeipuuv/gojsonschema)
+
