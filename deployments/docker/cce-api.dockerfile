@@ -18,7 +18,7 @@ RUN git clone --depth=1 --branch=master https://github.com/edwardfward/swx-cce .
 RUN go get -d -v cmd/cce-server.go
 RUN go install -v cmd/cce-server.go
 
-CMD ["cce-server"]
+CMD ["./cce-server"]
 
 
 
