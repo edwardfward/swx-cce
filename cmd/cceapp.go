@@ -55,7 +55,7 @@ func displayEnvVars(w http.ResponseWriter, r *http.Request) {
 		"Database Username: %s\n"+
 		"Database Password: %s\n"+
 		"Database Max Connections: %d\n", dbHost, dbPort, dbUsername, dbPassword,
-		dbStats.Idle)
+		dbStats.OpenConnections)
 
 	if n == 0 || err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
