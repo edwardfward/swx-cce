@@ -1,36 +1,32 @@
-version: '3.1'
+version: "3.1"
 
 services:
 
   cce-db:
-    build:
-      context: .
-      dockerfile: cce-db.dockerfile
-      labels:
-        cce.app.description: "CCE PostgreSQL database back-end"
-        cce.app.phase: "dev"
-        cce.app.version: "v0.0"
-    restart: always
+    image: postgres:latest
     environment:
-      DB_URL: ${CCE_DB_URL}
-      DB_PORT: ${CCE_DB_PORT}
-      DB_USERNAME: ${CCE_DB_USERNAME}
-      DB_PASSWORD: ${CCE_DB_PASSWORD}
-      DB_DATA_DIR: ${CCE_DATA_DIR}
-
+      POSTGRES_USER: ${CCE_DB_USERNAME}
+      POSTGRES_PASSWORD: ${CCE_DB_PASSWORD}
+      PGDATA: ${CCE_DATA_DIR}
+      POSTGRES_DB: ${CCE_DB_NAME}
+    volumes:
+      - "cce_dbdata:${CCE_DATA_DIR}"
 
   cce-app:
     build:
+      args:
+        APP_REPO: ${CCE_APP_REPO}
       context: .
       dockerfile: cce-api.dockerfile
-      labels:
-        cce.app.description: "CCE Go API front-end"
-        cce.app.phase: "dev"
-        ccc.app.version: "v0.0"
-    restart: always
     environment:
       DB_URL: ${CCE_DB_URL}
       DB_PORT: ${CCE_DB_PORT}
       DB_USERNAME: ${CCE_DB_USERNAME}
       DB_PASSWORD: ${CCE_DB_PASSWORD}
+    ports:
+      - "8080:80/tcp"
+
+volumes:
+  cce_dbdata:
+
 
