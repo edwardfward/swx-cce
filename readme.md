@@ -38,4 +38,6 @@
 * [Go JSON Schema](https://github.com/xeipuuv/gojsonschema)
 * [NGINX Ingress Controller for Kubernetes](https://www.nginx.com/products/nginx/kubernetes-ingress-controller)
 * [Kubernetes Best Practices](https://kubernetes.io/docs/concepts/configuration/overview/)  
+* [Go Kit](https://gokit.io/)
+* [Go Gorilla Websocket](https://github.com/gorilla/websocket)
 
