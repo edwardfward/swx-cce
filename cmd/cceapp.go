@@ -11,6 +11,7 @@ import (
 )
 
 var (
+	db         *sql.DB
 	dbHost     = os.Getenv("DB_HOST")
 	dbName     = os.Getenv("DB_NAME")
 	dbPort     = os.Getenv("DB_PORT")
@@ -23,15 +24,12 @@ func main() {
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s",
 		dbUsername, dbPassword, dbHost, dbPort, dbName)
 
-	db, err := sql.Open("postgres", connStr)
+	var err error
+
+	db, err = sql.Open("postgres", connStr)
 	if err != nil {
 		log.Fatalf("DATABASE CONNECTION ERROR: Could not connect to database"+
 			" %s on %s:%s", dbName, dbHost, dbPort)
-	}
-
-	err = db.Ping()
-	if err != nil {
-		log.Fatal("ERROR: Failed database ping")
 	}
 
 	http.HandleFunc("/info", displayEnvVars)
@@ -44,10 +42,22 @@ func main() {
 
 func displayEnvVars(w http.ResponseWriter, r *http.Request) {
 
+	var dbPingStatus string
+
+	log.Printf("/info request recieved")
+
+	if err := db.Ping(); err != nil {
+		dbPingStatus = "Failed Ping"
+	} else {
+		dbPingStatus = "Good Ping"
+	}
+
 	n, err := fmt.Fprintf(w, "Database Url: %s\n"+
 		"Database Port: %s\n"+
 		"Database Username: %s\n"+
-		"Database Password: %s\n", dbHost, dbPort, dbUsername, dbPassword)
+		"Database Password: %s\n"+
+		"Database Ping: %s\n", dbHost, dbPort, dbUsername, dbPassword,
+		dbPingStatus)
 
 	if n == 0 || err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
