@@ -6,6 +6,8 @@ import (
 	"log"
 	"net/http"
 	"os"
+
+	_ "github.com/lib/pq"
 )
 
 var (
@@ -23,7 +25,7 @@ func main() {
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		log.Fatalf("DATABASE CONNECTION ERROR: Could not connect to database" +
+		log.Fatalf("DATABASE CONNECTION ERROR: Could not connect to database"+
 			" %s on %s:%s", dbName, dbHost, dbPort)
 	}
 
@@ -34,7 +36,10 @@ func main() {
 
 	http.HandleFunc("/info", displayEnvVars)
 
-	http.ListenAndServe(":8080", nil)
+	err = http.ListenAndServe(":8080", nil)
+	if err != nil {
+		log.Fatalf("SERVER ERROR: Server unexpectedly quit")
+	}
 }
 
 func displayEnvVars(w http.ResponseWriter, r *http.Request) {
