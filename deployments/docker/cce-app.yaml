@@ -19,12 +19,13 @@ services:
       context: .
       dockerfile: cce-api.dockerfile
     environment:
-      DB_URL: ${CCE_DB_URL}
+      DB_HOST: ${CCE_DB_HOST}
+      DB_NAME: ${CCE_DB_NAME}
       DB_PORT: ${CCE_DB_PORT}
       DB_USERNAME: ${CCE_DB_USERNAME}
       DB_PASSWORD: ${CCE_DB_PASSWORD}
     ports:
-      - "8080:80/tcp"
+      - "8080:8080/tcp"
 
 volumes:
   cce_dbdata:
