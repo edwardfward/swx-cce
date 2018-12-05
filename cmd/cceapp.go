@@ -24,6 +24,8 @@ func main() {
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%s/%s",
 		dbUsername, dbPassword, dbHost, dbPort, dbName)
 
+	log.Printf("Connection string: %s", connStr)
+
 	var err error
 
 	db, err = sql.Open("postgres", connStr)
@@ -31,6 +33,8 @@ func main() {
 		log.Fatalf("DATABASE CONNECTION ERROR: Could not connect to database"+
 			" %s on %s:%s", dbName, dbHost, dbPort)
 	}
+
+	defer db.Close()
 
 	http.HandleFunc("/info", displayEnvVars)
 

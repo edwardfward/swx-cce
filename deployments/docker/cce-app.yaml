@@ -11,6 +11,8 @@ services:
       POSTGRES_DB: ${CCE_DB_NAME}
     volumes:
       - "cce_dbdata:${CCE_DATA_DIR}"
+    ports:
+      - "5432/tcp"
 
   cce-app:
     build:
