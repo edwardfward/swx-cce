@@ -21,9 +21,6 @@ WORKDIR /go/src/app
 RUN go get -d -v ./...
 RUN go install -v cmd/cceapp.go
 
-EXPOSE 80/tcp
+EXPOSE 8080/tcp
 
 CMD ["./cceapp"]
-
-
-
