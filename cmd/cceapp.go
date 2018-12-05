@@ -46,22 +46,16 @@ func main() {
 
 func displayEnvVars(w http.ResponseWriter, r *http.Request) {
 
-	var dbPingStatus string
-
 	log.Printf("/info request recieved")
 
-	if err := db.Ping(); err != nil {
-		dbPingStatus = "Failed Ping"
-	} else {
-		dbPingStatus = "Good Ping"
-	}
+	dbStats := db.Stats()
 
 	n, err := fmt.Fprintf(w, "Database Url: %s\n"+
 		"Database Port: %s\n"+
 		"Database Username: %s\n"+
 		"Database Password: %s\n"+
-		"Database Ping: %s\n", dbHost, dbPort, dbUsername, dbPassword,
-		dbPingStatus)
+		"Database Max Connections: %d\n", dbHost, dbPort, dbUsername, dbPassword,
+		dbStats.Idle)
 
 	if n == 0 || err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
