@@ -1,8 +1,12 @@
 version: "3.1"
 
+networks:
+  ccenet:
+    driver: bridge
+
 services:
 
-  cce-db:
+  ccedb:
     image: postgres:latest
     environment:
       POSTGRES_USER: ${CCE_DB_USERNAME}
@@ -11,8 +15,10 @@ services:
       POSTGRES_DB: ${CCE_DB_NAME}
     volumes:
       - "cce_dbdata:${CCE_DATA_DIR}"
+    networks:
+      - ccenet
 
-  cce-app:
+  cceapp:
     build:
       args:
         APP_REPO: ${CCE_APP_REPO}
@@ -26,8 +32,11 @@ services:
       DB_PASSWORD: ${CCE_DB_PASSWORD}
     ports:
       - "8080:8080/tcp"
+    networks:
+      - ccenet
 
 volumes:
   cce_dbdata:
+
 
 
