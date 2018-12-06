@@ -48,7 +48,7 @@ func createConnStr() (string, error) {
 }
 
 func (d *appData) testDatabase() string {
-	result, err := d.db.Exec("SELECT %d;", 1)
+	result, err := d.db.Exec(`SELECT $1;`, 1)
 	if err != nil {
 		return fmt.Sprintf("ERROR: Database is not functioning properly (%v)",
 			err)

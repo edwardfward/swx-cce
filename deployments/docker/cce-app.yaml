@@ -30,6 +30,7 @@ services:
       DB_PORT: ${CCE_DB_PORT}
       DB_USERNAME: ${CCE_DB_USERNAME}
       DB_PASSWORD: ${CCE_DB_PASSWORD}
+      DB_SSL_MODE: ${CCE_DB_SSL_MODE}  # disable
     ports:
       - "8080:8080/tcp"
     networks:
