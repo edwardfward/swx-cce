@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="../static/cce.css">
+</head>
+<body>
+    {{ range .Limits}}
+        <div class="limit">{{.Id}} - {{.Limit}}</div>
+    {{ end }}
+</body>
+</html>

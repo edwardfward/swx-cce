@@ -2,12 +2,10 @@ package cce
 
 import (
 	"database/sql"
+	"github.com/gorilla/mux"
 	_ "github.com/lib/pq"
 	"log"
 	"net/http"
-	"time"
-
-	"github.com/gorilla/mux"
 )
 
 type server struct {
@@ -18,7 +16,7 @@ type server struct {
 func NewServer() (*server, error) {
 
 	// delay to start to ensure Postgres container is ready
-	time.Sleep(5 * time.Second)
+	// time.Sleep(5 * time.Second)
 
 	// build connection string
 	// TODO: incorporate SSL options
