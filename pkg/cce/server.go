@@ -6,11 +6,13 @@ import (
 	"log"
 	"net/http"
 	"time"
+
+	"github.com/gorilla/mux"
 )
 
 type server struct {
 	data   *appData
-	router *http.ServeMux
+	router *mux.Router
 }
 
 func NewServer() (*server, error) {
@@ -34,7 +36,7 @@ func NewServer() (*server, error) {
 	s.data = &appData{}
 	s.data.db = db
 	s.data.connStr = connStr
-	s.router = http.NewServeMux()
+	s.router = mux.NewRouter()
 
 	return &s, nil
 }

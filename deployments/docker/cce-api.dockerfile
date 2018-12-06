@@ -20,6 +20,7 @@ RUN git clone --depth=1 --branch=master ${APP_REPO} /go/src/app
 WORKDIR /go/src/app
 # TODO: need to break the code with go get to eliminate dependencies in dockerfiles
 RUN go get -v github.com/lib/pq
+RUN go get -v github.com/gorilla/mux
 RUN go build -v cmd/cceapp.go
 
 EXPOSE 8080/tcp
