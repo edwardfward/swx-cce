@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="../static/cce.css">
 </head>
 <body>
+    <div class="title">{{.Title}}</div>
     {{ range .Limits}}
         <div class="limit">{{.Id}} - {{.Limit}}</div>
     {{ end }}

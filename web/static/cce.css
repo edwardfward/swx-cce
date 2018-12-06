@@ -1,3 +1,17 @@
+body {
+}
+
 .limit{
     font-size: large;
+    color: white;
+    margin: 5px;
+    padding: 5px;
+    background: blue;
+    font-family: sans-serif;
+    border-radius: 5px;
+}
+
+.title{
+    font-size: large;
+    text-align: center;
 }

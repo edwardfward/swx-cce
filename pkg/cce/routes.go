@@ -17,9 +17,8 @@ func (s *server) addRouting() {
 	s.router.HandleFunc("/cce/{cce}", s.handleCCEPage)
 
 	// static routing
-	fs := http.FileServer(http.Dir("./web/static/"))
-	log.Print(fs)
-	s.router.Handle("/static/", http.StripPrefix("/static/", fs))
+	fs := http.FileServer(http.Dir("./web/static"))
+	s.router.PathPrefix("/static/").Handler(http.StripPrefix("/static/", fs))
 
 	// api routing
 	s.router.HandleFunc("/api/v1/{cce:[a-zA-Z]+}", s.apiCCEHandler)
@@ -61,7 +60,7 @@ func (s *server) handleCCEPage(w http.ResponseWriter, r *http.Request) {
 	log.Print("CCE: Accessing page...")
 
 	cce := &CCE{Title: vars["cce"]}
-	for i := range [5]int{} {
+	for i := range [100]int{} {
 		cce.Limits = append(cce.Limits,
 			Limitation{Limit: "System is not secure enough.",
 				Id: i + 1})
