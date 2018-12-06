@@ -1,13 +1,13 @@
 package main
 
 import (
-	"../pkg/app"
+	"../pkg/cce"
 	"log"
 )
 
 func main() {
 
-	s, err := app.NewServer()
+	s, err := cce.NewServer()
 	if err != nil {
 		log.Fatal(err)
 	}

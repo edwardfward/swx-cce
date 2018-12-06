@@ -1,5 +1,5 @@
 ---
-# Pod contains two containers and a ephemeral shared volume. cce-app contains
+# Pod contains two containers and a ephemeral shared volume. cce-cce contains
 # the CCE API microservice end points. cce-git conducts git pull requests
 # every five minutes to detect changes and initiate any updates.
 # todo research a more efficient ways to do continuous updates in Kubernetes
@@ -15,7 +15,7 @@ metadata:
     deployment: v0
 spec:
   containers:
-    - name: cce-app  # todo flush out container specs
+    - name: cce-cce  # todo flush out container specs
       image:
       volumeMounts:
         - mountPath: /cache
