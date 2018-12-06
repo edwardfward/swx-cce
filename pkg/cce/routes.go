@@ -31,7 +31,7 @@ func (s *server) handleIndex(w http.ResponseWriter, r *http.Request) {
 func (s *server) handleInfo(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		n, err := fmt.Fprint(w, s.dbInfo())
+		n, err := fmt.Fprint(w, s.data.dbInfo())
 		if n == 0 || err != nil {
 			http.Error(w, "Unable to write database info",
 				http.StatusInternalServerError)
@@ -44,7 +44,7 @@ func (s *server) handleInfo(w http.ResponseWriter, r *http.Request) {
 func (s *server) handleTestDb(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
-		n, err := fmt.Fprint(w, s.testDatabase())
+		n, err := fmt.Fprint(w, s.data.testDatabase())
 		if n == 0 || err != nil {
 			http.Error(w, "Unable to read from database",
 				http.StatusInternalServerError)

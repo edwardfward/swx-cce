@@ -5,6 +5,7 @@ import (
 	_ "github.com/lib/pq"
 	"log"
 	"net/http"
+	"time"
 )
 
 type server struct {
@@ -14,16 +15,19 @@ type server struct {
 
 func NewServer() (*server, error) {
 
+	// delay to start to ensure Postgres container is ready
+	time.Sleep(5 * time.Second)
+
 	// build connection string
 	// TODO: incorporate SSL options
-	connStr, err := CreateConnStr()
+	connStr, err := createConnStr()
 	if err != nil {
-		log.Printf("ERROR: Connection string failed (%s)", connStr)
+		log.Fatalf("ERROR: Connection string failed (%s)", connStr)
 	}
 
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
-		log.Printf("ERROR: Database failed to connect (%s)", err)
+		log.Fatalf("ERROR: Database failed to connect (%s)", err)
 	}
 
 	s := server{}
@@ -50,5 +54,6 @@ func (s *server) StartServer() {
 	if err != nil {
 		log.Fatalf("ERROR: Failed to start (%v)", err)
 	}
+	log.Print("SERVER: Started and listening on port :8080")
 
 }

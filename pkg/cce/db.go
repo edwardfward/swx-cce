@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"os"
+	"strings"
 )
 
 type appData struct {
@@ -12,25 +13,42 @@ type appData struct {
 }
 
 // TODO: Add more robust data and statistics
-func (s *server) dbInfo() string {
-	return s.data.connStr
+func (d *appData) dbInfo() string {
+	return d.connStr
 }
 
 // TODO: Add more robust error checking and default env vars
-func CreateConnStr() (string, error) {
-	// gather env vars for postgres database
-	dbHost := os.Getenv("DB_HOST")
-	dbName := os.Getenv("DB_NAME")
-	dbPort := os.Getenv("DB_PORT")
-	dbUsername := os.Getenv("DB_USERNAME")
-	dbPassword := os.Getenv("DB_PASSWORD")
+func createConnStr() (string, error) {
 
-	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s",
-		dbUsername, dbPassword, dbHost, dbPort, dbName), nil
+	vars := make(map[string]string)
+
+	connStr := ""
+
+	vars["dbname"] = os.Getenv("DB_NAME")
+	vars["user"] = os.Getenv("DB_USERNAME")
+	vars["password"] = os.Getenv("DB_PASSWORD")
+	vars["host"] = os.Getenv("DB_HOST")
+	vars["port"] = os.Getenv("DB_PORT")
+	vars["sslmode"] = os.Getenv("DB_SSL_MODE")
+	vars["connect_timeout"] = os.Getenv("DB_CONNECT_TIMEOUT")
+	vars["sslcert"] = os.Getenv("DB_SSL_CERT")
+	vars["sslkey"] = os.Getenv("DB_SSL_KEY")
+	vars["sslrootcert"] = os.Getenv("DB_SSL_ROOT_CERT")
+
+	for k, v := range vars {
+		if v == "" {
+			continue
+		} else {
+			connStr += fmt.Sprintf("%s=%s ", k, v)
+		}
+	}
+
+	return strings.TrimSpace(connStr), nil
+
 }
 
-func (s *server) testDatabase() string {
-	result, err := s.data.db.Exec("SELECT %d;", 1)
+func (d *appData) testDatabase() string {
+	result, err := d.db.Exec("SELECT %d;", 1)
 	if err != nil {
 		return "ERROR: Database is not functioning properly"
 	} else {
