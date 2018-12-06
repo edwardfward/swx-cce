@@ -18,7 +18,7 @@ RUN mkdir -p /go/src/app
 RUN git clone --depth=1 --branch=master ${APP_REPO} /go/src/app
 
 WORKDIR /go/src/app
-RUN go get -d -v cmd/cceapp.go
+RUN go get -v github.com/lib/pq
 RUN go build -v cmd/cceapp.go
 
 EXPOSE 8080/tcp

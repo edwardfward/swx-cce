@@ -28,3 +28,12 @@ func CreateConnStr() (string, error) {
 	return fmt.Sprintf("postgres://%s:%s@%s:%s/%s",
 		dbUsername, dbPassword, dbHost, dbPort, dbName), nil
 }
+
+func (s *server) testDatabase() string {
+	result, err := s.data.db.Exec("SELECT %d;", 1)
+	if err != nil {
+		return "ERROR: Database is not functioning properly"
+	} else {
+		return fmt.Sprintf("RESULT: %v", result)
+	}
+}

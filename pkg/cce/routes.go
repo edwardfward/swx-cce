@@ -9,6 +9,7 @@ import (
 func (s *server) addRouting() {
 	s.router.HandleFunc("/", s.handleIndex)
 	s.router.HandleFunc("/info", s.handleInfo)
+	s.router.HandleFunc("/testdb", s.handleTestDb)
 }
 
 func (s *server) handleIndex(w http.ResponseWriter, r *http.Request) {
@@ -33,6 +34,19 @@ func (s *server) handleInfo(w http.ResponseWriter, r *http.Request) {
 		n, err := fmt.Fprint(w, s.dbInfo())
 		if n == 0 || err != nil {
 			http.Error(w, "Unable to write database info",
+				http.StatusInternalServerError)
+		}
+	case "POST":
+		http.Error(w, "Unauthorized method", http.StatusMethodNotAllowed)
+	}
+}
+
+func (s *server) handleTestDb(w http.ResponseWriter, r *http.Request) {
+	switch r.Method {
+	case "GET":
+		n, err := fmt.Fprint(w, s.testDatabase())
+		if n == 0 || err != nil {
+			http.Error(w, "Unable to read from database",
 				http.StatusInternalServerError)
 		}
 	case "POST":
