@@ -42,7 +42,7 @@ func (s *server) handleInfo(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *server) handleTestDb(w http.ResponseWriter, r *http.Request) {
-	log.Print()
+	log.Print("/testdb request received...")
 	switch r.Method {
 	case "GET":
 		n, err := fmt.Fprint(w, s.data.testDatabase())
