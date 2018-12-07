@@ -82,7 +82,8 @@ func (d *appData) setupDatabase() {
   		"cce" VARCHAR(50) NOT NULL,
   		"limit" VARCHAR(50) NOT NULL,
   		submitted TIMESTAMP
-	);`)
+	);
+	`)
 	if err != nil {
 		log.Printf("DATABASE ERROR: Could not create CCE Limits table (%v)", err)
 	}
