@@ -61,13 +61,28 @@ func (d *appData) testDatabase() string {
 func (d *appData) setupDatabase() {
 	// create schema
 	// TODO: create schema vars for dev, test, production
-	_, err := d.db.Query(`CREATE SCHEMA IF NOT EXISTS cceDev AUTHORIZATION cce_admin;`)
+	_, err := d.db.Exec(
+		`CREATE SCHEMA IF NOT EXISTS cceDev AUTHORIZATION cce_admin;`)
 	if err != nil {
-		log.Printf("DATABASE ERROR: Could not create or check schema (%v)", err)
+		log.Printf("DATABASE ERROR: Could not create or check schema (%v)",
+			err)
+	}
+
+	_, err = d.db.Exec(`ALTER DATABASE ccedata SET search_path TO cceDev;`)
+	if err != nil {
+		log.Printf("DATABASE ERROR: Could not set default search path (%v)",
+			err)
 	}
 
 	// create cce limits table
-	_, err = d.db.Query(`CREATE TABLE IF NOT EXISTS ccedev.Limits();`)
+	_, err = d.db.Query(
+		`
+				CREATE TABLE IF NOT EXISTS Limits(
+  					id SERIAL constraint Limits_pk primary key,
+  					"cce" VARCHAR(50) NOT NULL,
+  					"limit" VARCHAR(50) NOT NULL,
+  					submitted TIMESTAMP
+				);`)
 	if err != nil {
 		log.Printf("DATABASE ERROR: Could not create CCE Limits table (%v)", err)
 	}
