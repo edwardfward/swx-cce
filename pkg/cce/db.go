@@ -77,12 +77,12 @@ func (d *appData) setupDatabase() {
 	// create cce limits table
 	_, err = d.db.Query(
 		`
-				CREATE TABLE IF NOT EXISTS Limits(
-  					id SERIAL constraint Limits_pk primary key,
-  					"cce" VARCHAR(50) NOT NULL,
-  					"limit" VARCHAR(50) NOT NULL,
-  					submitted TIMESTAMP
-				);`)
+	CREATE TABLE IF NOT EXISTS Limits(
+  		id SERIAL constraint Limits_pk primary key,
+  		"cce" VARCHAR(50) NOT NULL,
+  		"limit" VARCHAR(50) NOT NULL,
+  		submitted TIMESTAMP
+	);`)
 	if err != nil {
 		log.Printf("DATABASE ERROR: Could not create CCE Limits table (%v)", err)
 	}
