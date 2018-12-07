@@ -32,8 +32,11 @@ func NewServer() (*server, error) {
 
 	s := server{}
 	s.data = &appData{}
+
 	s.data.db = db
+	s.data.setupDatabase()
 	s.data.connStr = connStr
+
 	s.router = mux.NewRouter()
 
 	return &s, nil
@@ -54,6 +57,5 @@ func (s *server) StartServer() {
 	if err != nil {
 		log.Fatalf("ERROR: Failed to start (%v)", err)
 	}
-	log.Print("SERVER: Started and listening on port :8080")
 
 }
