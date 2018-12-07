@@ -2,7 +2,7 @@ package cce
 
 import "time"
 
-type Limitation struct {
+type Limit struct {
 	Id        int       `json:"id, omitempty"`
 	Limit     string    `json:"limit"`
 	Group     string    `json:"group"`
@@ -10,6 +10,6 @@ type Limitation struct {
 }
 
 type CCE struct {
-	Title  string       `json:"cce"`
-	Limits []Limitation `json:"limits"`
+	Title  string  `json:"cce"`
+	Limits []Limit `json:"limits"`
 }
