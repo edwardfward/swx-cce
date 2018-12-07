@@ -35,6 +35,8 @@ func (s *server) handleAdmin(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// handleCCE returns the cce.html template formatted for the CCE requested.
+// TODO: build test and flush out
 func (s *server) handleCCE(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
@@ -44,7 +46,8 @@ func (s *server) handleCCE(w http.ResponseWriter, r *http.Request) {
 }
 
 // apiManageCCEs allows facilitator or admin to perform ACID operations on
-// a CCE. Function queries database and returns CCE JSON.
+// a CCE. Function queries database and writes CCE JSONs. All requests must
+// be authenticated.
 // TODO: build test and flush out
 func (s *server) apiManageCCEs(w http.ResponseWriter, r *http.Request) {
 
@@ -56,8 +59,9 @@ func (s *server) apiManageCCEs(w http.ResponseWriter, r *http.Request) {
 }
 
 // apiManageLimits allows users, facilitators, and admins to perform ACID
-// operations on individual CCE limits. Function returns and accepts
-// TODO: flush out
+// operations on individual CCE limits. Function returns and accepts Limit
+// JSONs. All requests must be authenticated.
+// TODO: build test and flush out
 func (s *server) apiManageLimits(w http.ResponseWriter, r *http.Request) {
 
 	switch r.Method {
