@@ -17,6 +17,8 @@ services:
       - "cce_dbdata:${CCE_DATA_DIR}"
     networks:
       - ccenet
+    ports:
+      - "5432:5432/tcp"
 
   cceapp:
     build:
