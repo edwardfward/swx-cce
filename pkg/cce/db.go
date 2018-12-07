@@ -3,6 +3,7 @@ package cce
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"os"
 	"strings"
 )
@@ -55,4 +56,20 @@ func (d *appData) testDatabase() string {
 	} else {
 		return fmt.Sprintf("RESULT: %v", row)
 	}
+}
+
+func (d *appData) setupDatabase() {
+	// create schema
+	// TODO: create schema vars for dev, test, production
+	_, err := d.db.Query(`CREATE SCHEMA IF NOT EXISTS cceDev AUTHORIZATION cce_admin;`)
+	if err != nil {
+		log.Printf("DATABASE ERROR: Could not create or check schema (%v)", err)
+	}
+
+	// create cce limits table
+	_, err = d.db.Query(`CREATE TABLE IF NOT EXISTS ccedev.Limits();`)
+	if err != nil {
+		log.Printf("DATABASE ERROR: Could not create CCE Limits table (%v)", err)
+	}
+
 }
