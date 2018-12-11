@@ -168,44 +168,39 @@ func (a *Authenticator) decryptJWT(encryptedToken string) ([]byte, error) {
 func (a *Authenticator) allow(encryptedJWT string) (bool, error) {
 	// check redis for key, value
 	val, err := a.keyStore.Get(encryptedJWT).Result()
-	if err != redis.Nil || val == "" {
-		log.Printf("(%v) Encrypted JWT role not stored in Redis or Redis "+
-			"connection invalid.", err)
+	// connected, but key not found in data store
 
-		plainJwt, err := a.decryptJWT(encryptedJWT)
-		if err != nil {
-			log.Printf("Unable to decrypt JWT")
-			return false, nil
-		}
-
-		log.Printf("Plain Text: %s", plainJwt)
-		// unmarshal plaintext JWT
-		jwt := &JWT{}
-		err = json.Unmarshal(plainJwt, jwt)
-		if err != nil {
-			log.Printf("Error (%v): Failed to unmarshal (%s) decrypyed JWT",
-				err, plainJwt)
-			return false, nil
-		}
-
-		// check if role properly defined in JWT
-		if (jwt.Role == "admin") || (jwt.Role == "user") ||
-			(jwt.Role == "facilitator") || (jwt.Role == "analyst") {
-
-			err := a.keyStore.Set(encryptedJWT, jwt.Role, time.Hour).Err()
-			if err != nil {
-				log.Printf("(%v) Failed to store encrypted JWT in Redis", err)
-			}
-			return true, nil
-		}
-
-	}
-
-	// return true and no errors is val in Redis key store is one of the following
+	// check value against known user types
 	if (val == "admin") || (val == "user") || (val == "facilitator") ||
 		(val == "analyst") {
 		return true, nil
+	} else if val != "" {
+		// some other role detected, remove errant role, deny access
+		a.keyStore.Del(encryptedJWT)
+		return false, err
+	}
+
+	plainJWT, err := a.decryptJWT(encryptedJWT)
+	if err != nil {
+		return false, err
+	}
+
+	// unmarshal plaintext JWT
+	jwt := &JWT{}
+	err = json.Unmarshal(plainJWT, jwt)
+	if err != nil {
+		return false, err
+	}
+
+	// check if role properly defined in decrypted JWT
+	if (jwt.Role == "admin") || (jwt.Role == "user") ||
+		(jwt.Role == "facilitator") || (jwt.Role == "analyst") {
+
+		err := a.keyStore.Set(encryptedJWT, jwt.Role, time.Hour).Err()
+
+		return true, err
 	} else {
 		return false, nil
 	}
+
 }

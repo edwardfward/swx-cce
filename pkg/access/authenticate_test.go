@@ -9,9 +9,11 @@ import (
 	"golang.org/x/crypto/bcrypt"
 	"log"
 	"testing"
+	"time"
 )
 
 var auth *Authenticator
+var testCookie string
 
 const (
 	userPassword string = "TestTest1234567890"
@@ -41,7 +43,12 @@ func init() {
 
 	_, err = auth.keyStore.Ping().Result()
 	if err != nil {
-		log.Printf("*** Redis DB ping failed (%v) ***\n", err)
+		log.Printf("*** redis not connected ***\n")
+	}
+
+	testCookie, err = auth.encryptJWT([]byte(testJWT))
+	if err != nil {
+		log.Fatalf("*** failed to create encrypted test jwt***")
 	}
 }
 
@@ -195,16 +202,62 @@ func TestIsValidEmail(t *testing.T) {
 
 func TestAllow(t *testing.T) {
 
-	authorized, err := auth.encryptJWT([]byte(testJWT))
-	if err != nil {
-		log.Fatalf("Failed to encrypt authorized test JWT (%v)", err)
-	}
-
-	result, err := auth.allow(authorized)
-	if err != nil {
+	result, err := auth.allow(testCookie)
+	if err != nil && !result {
 		log.Fatalf("Failed to determine whether authorized access (%v)", err)
 	}
 	if !result {
 		log.Fatalf("Failed authorization. Expected: true Received: %t", result)
 	}
+}
+
+func TestRedis(t *testing.T) {
+	// test pass if unable to connect to Redis
+	_, err := auth.keyStore.Ping().Result()
+	if err != nil {
+		t.SkipNow()
+	}
+
+	jwt, err := auth.encryptJWT([]byte(testJWT))
+	if err != nil {
+		log.Fatalf("Unable to generate encrypted JWT for test (%v)", err)
+	}
+
+	t.Run("Add", func(t *testing.T) {
+		// check add
+		_, err = auth.keyStore.Set(jwt, "admin", 0).Result()
+		if err != nil {
+			log.Fatalf("Failed to set key-value \"%s\":\"admin\"", jwt)
+		}
+	})
+
+	t.Run("Read", func(t *testing.T) {
+		val, err := auth.keyStore.Get(jwt).Result()
+		if (err != nil) || (val != "admin") {
+			log.Fatalf("Failed to read key-value \"%s\":\"admin\"", jwt)
+		}
+	})
+
+	t.Run("Delete", func(t *testing.T) {
+		num, err := auth.keyStore.Del(jwt).Result()
+		if (err != nil) || (num != 1) {
+			log.Fatalf("Failed to delete key-value \"%s\":\"admin", jwt)
+		}
+	})
+
+	t.Run("Timeout", func(t *testing.T) {
+		// check expiration
+		_, err = auth.keyStore.Set(jwt, "admin", time.Second*1).Result()
+		if err != nil {
+			log.Fatalf("Failed to set key-value \"%s\":\"admin\"", jwt)
+		}
+
+		time.Sleep(time.Second * 2)
+
+		_, err = auth.keyStore.Get(jwt).Result()
+		if err != redis.Nil {
+			log.Fatalf("Failed to timeout key-value \"%s\":\"admin\"", jwt)
+		}
+	})
+
 }
