@@ -11,6 +11,7 @@ import (
 	"io"
 	"log"
 	"regexp"
+	"time"
 	"unicode"
 )
 
@@ -167,7 +168,9 @@ func (a *Authenticator) decryptJWT(encryptedToken string) ([]byte, error) {
 func (a *Authenticator) allow(encryptedJWT string) (bool, error) {
 	// check redis for key, value
 	val, err := a.keyStore.Get(encryptedJWT).Result()
-	if err != nil {
+	if err != redis.Nil {
+		log.Printf("(%v) Encrypted JWT not stored in Redis or Redis connection "+
+			"invalid.", err)
 		plainJwt, err := a.decryptJWT(encryptedJWT)
 		if err != nil {
 			log.Printf("Unable to decrypt JWT")
@@ -183,8 +186,14 @@ func (a *Authenticator) allow(encryptedJWT string) (bool, error) {
 			return false, nil
 		}
 
-		// check if role in JWT
-		if jwt.Role == "admin" {
+		// check if role properly defined in JWT
+		if (jwt.Role == "admin") || (jwt.Role == "user") ||
+			(jwt.Role == "facilitator") || (jwt.Role == "analyst") {
+
+			err := a.keyStore.Set(encryptedJWT, jwt.Role, time.Hour).Err()
+			if err != nil {
+				log.Printf("(%v) Failed to store encrypted JWT in Redis", err)
+			}
 			return true, nil
 		}
 

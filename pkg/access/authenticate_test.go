@@ -37,6 +37,11 @@ func init() {
 		Password: "",
 		DB:       0,
 	})
+
+	_, err = auth.keyStore.Ping().Result()
+	if err != nil {
+		log.Printf("*** Redis DB ping failed (%v) ***\n", err)
+	}
 }
 
 // TestAuthenticator_GenerateHash compares whether the GenerateHash function

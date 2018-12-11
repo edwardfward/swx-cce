@@ -1,4 +1,6 @@
-version: "3.1"
+version: "3.7"
+
+# Reference: https://docs.docker.com/compose/compose-file/
 
 networks:
   ccenet:
@@ -20,6 +22,19 @@ services:
     ports:
       - "5432:5432/tcp"
 
+  cceredis:
+    build:
+      context: .
+      dockerfile: cce-redis.dockerfile
+      labels:
+        - "env=dev"
+    networks:
+      - ccenet
+    volumes:
+      - "cce_redis:/data"
+    ports:
+      - "6379:6379"
+
   cceapp:
     build:
       args:
@@ -40,6 +55,7 @@ services:
 
 volumes:
   cce_dbdata:
+  cce_redis:
 
 
 
