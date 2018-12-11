@@ -1,3 +1,12 @@
+#!/usr/bin/env bash
+
+# Script generates a run time script that configures Redis based on environment
+# variables supplied at runtime
+
+# create configuration directory
+mkdir -p /usr/local/etc/redis/
+
+cat <<EOF > /usr/local/etc/redis/redis.conf
 # Redis configuration file example.
 #
 # Note that in order to read the configuration file, Redis must be
@@ -66,7 +75,7 @@
 # IF YOU ARE SURE YOU WANT YOUR INSTANCE TO LISTEN TO ALL THE INTERFACES
 # JUST COMMENT THE FOLLOWING LINE.
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-bind 127.0.0.1
+${BIND_REDIS_BIND_INTERFACE}
 
 # Protected mode is a layer of security protection, in order to avoid that
 # Redis instances left open on the internet are accessed and exploited.
@@ -89,7 +98,7 @@ protected-mode yes
 
 # Accept connections on the specified port, default is 6379 (IANA #815344).
 # If port 0 is specified Redis will not listen on a TCP socket.
-port 6379
+port ${REDIS_PORT}
 
 # TCP listen() backlog.
 #
@@ -98,7 +107,7 @@ port 6379
 # will silently truncate it to the value of /proc/sys/net/core/somaxconn so
 # make sure to raise both the value of somaxconn and tcp_max_syn_backlog
 # in order to get the desired effect.
-tcp-backlog 511
+tcp-backlog 128
 
 # Unix socket.
 #
@@ -110,7 +119,7 @@ tcp-backlog 511
 # unixsocketperm 700
 
 # Close the connection after a client is idle for N seconds (0 to disable)
-timeout 0
+timeout 60
 
 # TCP keepalive.
 #
@@ -163,7 +172,7 @@ pidfile /var/run/redis_6379.pid
 # verbose (many rarely useful info, but not a mess like the debug level)
 # notice (moderately verbose, what you want in production probably)
 # warning (only very important / critical messages are logged)
-loglevel notice
+loglevel verbose
 
 # Specify the log file name. Also the empty string can be used to force
 # Redis to log on the standard output. Note that if you use standard
@@ -183,7 +192,7 @@ logfile ""
 # Set the number of databases. The default database is DB 0, you can select
 # a different one on a per-connection basis using SELECT <dbid> where
 # dbid is a number between 0 and 'databases'-1
-databases 16
+databases 1
 
 # By default Redis shows an ASCII art logo only when started to log to the
 # standard output and if the standard output is a TTY. Basically this means
@@ -504,7 +513,7 @@ replica-priority 100
 # 150k passwords per second against a good box. This means that you should
 # use a very strong password otherwise it will be very easy to break.
 #
-# requirepass foobared
+requirepass ${REDIS_PWD}
 
 # Command renaming.
 #
@@ -536,7 +545,7 @@ replica-priority 100
 # Once the limit is reached Redis will close all the new connections sending
 # an error 'max number of clients reached'.
 #
-# maxclients 10000
+# maxclients ${REDIS_MAX_CLIENTS}
 
 ############################## MEMORY MANAGEMENT ################################
 
@@ -1044,7 +1053,7 @@ latency-monitor-threshold 0
 #  z     Sorted set commands
 #  x     Expired events (events generated every time a key expires)
 #  e     Evicted events (events generated when a key is evicted for maxmemory)
-#  A     Alias for g$lshzxe, so that the "AKE" string means all the events.
+#  A     Alias for glshzxe, so that the "AKE" string means all the events.
 #
 #  The "notify-keyspace-events" takes as argument a string that is composed
 #  of zero or multiple characters. The empty string means that notifications
@@ -1375,4 +1384,7 @@ rdb-save-incremental-fsync yes
 # Maximum number of set/hash/zset/list fields that will be processed from
 # the main dictionary scan
 # active-defrag-max-scan-fields 1000
+EOF
 
+# start redis server
+exec redis-server /usr/local/etc/redis/redis.conf

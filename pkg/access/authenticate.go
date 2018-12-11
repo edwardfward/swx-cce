@@ -168,15 +168,17 @@ func (a *Authenticator) decryptJWT(encryptedToken string) ([]byte, error) {
 func (a *Authenticator) allow(encryptedJWT string) (bool, error) {
 	// check redis for key, value
 	val, err := a.keyStore.Get(encryptedJWT).Result()
-	if err != redis.Nil {
-		log.Printf("(%v) Encrypted JWT not stored in Redis or Redis connection "+
-			"invalid.", err)
+	if err != redis.Nil || val == "" {
+		log.Printf("(%v) Encrypted JWT role not stored in Redis or Redis "+
+			"connection invalid.", err)
+
 		plainJwt, err := a.decryptJWT(encryptedJWT)
 		if err != nil {
 			log.Printf("Unable to decrypt JWT")
 			return false, nil
 		}
 
+		log.Printf("Plain Text: %s", plainJwt)
 		// unmarshal plaintext JWT
 		jwt := &JWT{}
 		err = json.Unmarshal(plainJwt, jwt)
@@ -200,7 +202,8 @@ func (a *Authenticator) allow(encryptedJWT string) (bool, error) {
 	}
 
 	// return true and no errors is val in Redis key store is one of the following
-	if val == "admin" || val == "user" || val == "facilitator" || val == "analyst" {
+	if (val == "admin") || (val == "user") || (val == "facilitator") ||
+		(val == "analyst") {
 		return true, nil
 	} else {
 		return false, nil

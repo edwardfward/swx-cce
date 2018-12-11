@@ -33,9 +33,10 @@ func init() {
 	auth.aesGCM = aesGCM
 
 	auth.keyStore = redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
-		DB:       0,
+		Addr:       ":6379",
+		Password:   "testtesttest1234567890", // no password
+		DB:         0,                        // use default DB 0
+		MaxRetries: 3,
 	})
 
 	_, err = auth.keyStore.Ping().Result()
@@ -193,10 +194,12 @@ func TestIsValidEmail(t *testing.T) {
 }
 
 func TestAllow(t *testing.T) {
+
 	authorized, err := auth.encryptJWT([]byte(testJWT))
 	if err != nil {
 		log.Fatalf("Failed to encrypt authorized test JWT (%v)", err)
 	}
+
 	result, err := auth.allow(authorized)
 	if err != nil {
 		log.Fatalf("Failed to determine whether authorized access (%v)", err)
@@ -204,5 +207,4 @@ func TestAllow(t *testing.T) {
 	if !result {
 		log.Fatalf("Failed authorization. Expected: true Received: %t", result)
 	}
-
 }

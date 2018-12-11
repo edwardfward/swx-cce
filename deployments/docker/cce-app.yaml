@@ -34,6 +34,12 @@ services:
       - "cce_redis:/data"
     ports:
       - "6379:6379"
+    environment:
+      REDIS_PORT: ${CCE_REDIS_PORT}
+      REDIS_PWD: ${CCE_REDIS_PASSWORD}
+      REDIS_DB_NUMBER: ${CCE_REDIS_DB_NUMBER}
+      REDIS_BIND_INTERFACE: ${CCE_REDIS_BIND_INTERFACE}
+      REDIS_MAX_CLIENTS: ${CCE_REDIS_MAX_CLIENTS}
 
   cceapp:
     build:
