@@ -40,4 +40,5 @@
 * [Kubernetes Best Practices](https://kubernetes.io/docs/concepts/configuration/overview/)  
 * [Go Kit](https://gokit.io/)
 * [Go Gorilla Websocket](https://github.com/gorilla/websocket)
+* [OpenAPI](https://github.com/OAI/OpenAPI-Specification)
 
