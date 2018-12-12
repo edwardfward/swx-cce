@@ -3,6 +3,7 @@ package access
 import (
 	"crypto/cipher"
 	"crypto/rand"
+	"crypto/rsa"
 	"database/sql"
 	"encoding/base64"
 	"encoding/json"
@@ -35,6 +36,7 @@ type Authenticator struct {
 	keyStore *redis.Client
 	secret   []byte // SHA-256 hash of secret key
 	aesGCM   cipher.AEAD
+	rsaKey   rsa.PrivateKey
 }
 
 type JWT struct {

@@ -16,14 +16,14 @@ var auth *Authenticator
 var testCookie string
 
 const (
-	userPassword string = "TestTest1234567890"
-	secret       string = "TestTest12345678909843434"
-	testJWT      string = `{"role":"admin","email":"test@test.com"}`
+	PASSWORD string = "TestTest1234567890"
+	SECRET   string = "TestTest12345678909843434"
+	JSON     string = `{"role":"admin","email":"test@test.com"}`
 )
 
 func init() {
 	auth = &Authenticator{}
-	secret32 := sha256.Sum256([]byte(secret))
+	secret32 := sha256.Sum256([]byte(SECRET))
 	secretKey := secret32[:]
 
 	block, err := aes.NewCipher(secretKey)
@@ -46,7 +46,7 @@ func init() {
 		log.Printf("*** redis not connected ***\n")
 	}
 
-	testCookie, err = auth.encryptJWT([]byte(testJWT))
+	testCookie, err = auth.encryptJWT([]byte(JSON))
 	if err != nil {
 		log.Fatalf("*** failed to create encrypted test jwt***")
 	}
@@ -56,57 +56,57 @@ func init() {
 // returns the proper base64 encoded hash
 func TestGenerateBase64Hash(t *testing.T) {
 
-	h64, err := generateBase64Hash([]byte(userPassword))
+	h64, err := generateBase64Hash([]byte(PASSWORD))
 	if err != nil {
-		log.Fatal("GenerateHash method failed to generate a salted hash")
+		t.Errorf("failed to generate a bcrypt salted hash - %v", err)
 	}
 
 	h, err := base64.StdEncoding.DecodeString(h64)
 	if err != nil {
-		log.Fatal("Failed to decode base64 encoded salted hash")
+		t.Errorf("failed to decode base64 encoded hash - %v", err)
 	}
 
-	err = bcrypt.CompareHashAndPassword(h, []byte(userPassword))
+	err = bcrypt.CompareHashAndPassword(h, []byte(PASSWORD))
 	if err != nil {
-		log.Fatalf("Test failed. Expected: nil Received: %v", err)
+		t.Errorf("expected: nil received: %v", err)
 	}
 }
 
 func TestValidatePassword(t *testing.T) {
 
-	h64, err := generateBase64Hash([]byte(userPassword))
+	h64, err := generateBase64Hash([]byte(PASSWORD))
 	if err != nil {
-		log.Fatal("Failed to generate base64 encoded salted hash")
+		t.Errorf("failed to generate base64 encoded salted hash - %v", err)
 	}
 
-	// test good password
-	result, err := validatePassword(h64, string([]byte(userPassword)))
+	t.Run("valid", func(t *testing.T) {
+		result, err := validatePassword(h64, string([]byte(PASSWORD)))
+		if !result || err != nil {
+			t.Errorf("expected: true received: %t", result)
+		}
+	})
 
-	if !result {
-		log.Fatalf("Expected: True Received: %t", result)
-	}
-
-	result, err = validatePassword(h64, "Teadsfaf")
-
-	// test bad password
-	if result {
-		log.Fatalf("Expected: False, Received: %t", result)
-	}
+	t.Run("invalid", func(t *testing.T) {
+		result, err := validatePassword(h64, "Teadsfaf")
+		if result || err == nil {
+			t.Errorf("failed to reject invalid password - %v", err)
+		}
+	})
 }
 
 func TestAuthenticator_encryptJWT(t *testing.T) {
 
-	json := []byte(testJWT)
+	json := []byte(JSON)
 
 	// get the base64 encoded, encrypted JWT
 	result, err := auth.encryptJWT(json)
 	if err != nil {
-		log.Fatalf("Failed to encrypt JWT with AES-256 cipher (%v)", err)
+		t.Errorf("failed to encrypt jwt with aes-256 cipher - %v", err)
 	}
 
 	resultBytes, err := base64.StdEncoding.DecodeString(result)
 	if err != nil {
-		log.Fatalf("Failed to decode Base64 encoded result (%v)", err)
+		t.Errorf("failed to decode base64 result - %v", err)
 	}
 
 	nonce := resultBytes[len(resultBytes)-NONCEBYTES:]
@@ -118,22 +118,22 @@ func TestAuthenticator_encryptJWT(t *testing.T) {
 		resultBytes[:len(resultBytes)-NONCEBYTES])
 
 	if eB64 != rParsed {
-		log.Fatalf("Expected: %s Received: %s", eB64, rParsed)
+		t.Errorf("expected: %s received: %s", eB64, rParsed)
 	}
 }
 
 func TestAuthenticator_decryptJWT(t *testing.T) {
 
-	expected := testJWT
+	expected := JSON
 
-	encryptedJWT, err := auth.encryptJWT([]byte(testJWT))
+	encryptedJWT, err := auth.encryptJWT([]byte(JSON))
 	if err != nil {
-		log.Fatalf("Failed to generate encrypted JWT")
+		t.Errorf("failed to generate encrypted jwt - %v", err)
 	}
 
 	jwt, err := base64.StdEncoding.DecodeString(encryptedJWT)
 	if err != nil {
-		log.Fatalf("Failed to decode Base64 encoded, encrypyed JWT (%v)", err)
+		t.Errorf("failed to decode base64 encoded, encrypyed jwt - %v", err)
 	}
 
 	nonce := jwt[len(jwt)-NONCEBYTES:]
@@ -141,22 +141,23 @@ func TestAuthenticator_decryptJWT(t *testing.T) {
 
 	plain, err := auth.aesGCM.Open(nil, nonce, cipherText, nil)
 	if err != nil {
-		log.Fatalf("Failed to decrypt AES-256 message (%v)", err)
+		t.Errorf("failed to decrypt aes-256 message - %v", err)
 	}
 
 	if string(plain) != expected {
-		log.Fatalf("Test failed to properly decrypt reference string")
+		t.Errorf("failed to properly decrypt reference string - %v",
+			string(plain))
 	}
 
 	result, err := auth.decryptJWT(encryptedJWT)
 	if err != nil {
-		log.Fatalf("Failed to receive decrypted JWT (%v", err)
+		t.Errorf("failed to decrypt jwt - %v", err)
 	}
 
 	resultText := string(result)
 
 	if expected != resultText {
-		log.Fatalf("Expected: %s Received: %s", expected, resultText)
+		t.Errorf("expected: %s received: %s", expected, resultText)
 	}
 
 }
@@ -166,68 +167,82 @@ func TestAuthenticator_getNonce(t *testing.T) {
 	result := len(getNonce(NONCEBYTES))
 
 	if expected != result {
-		log.Fatalf("Expected: %d Received: %d", expected, result)
+		t.Errorf("expected: %d received: %d", expected, result)
 	}
 }
 
 func TestIsValidPassword(t *testing.T) {
-	// TODO: need to check for dictionary words
-	goodPassword := "TTT323dsa432!!"
-	badPasswords := [...]string{"Tddfdafadfasdf", "31341421241", "TTTddafadfadfa!"}
 
-	// test valid passwords
-	if result, _ := isValidPassword(goodPassword); !result {
-		log.Fatalf("Expected: True Received: %t", result)
-	}
-
-	// test invalid passwords
-	for i, password := range badPasswords {
-		if result, _ := isValidPassword(password); result {
-			log.Fatalf("Expected: False (%s) and Received: %t",
-				badPasswords[i], !result)
+	t.Run("valid", func(t *testing.T) {
+		goodPassword := "TTT323dsa432!!"
+		if result, _ := isValidPassword(goodPassword); !result {
+			t.Errorf("expected: true received: %t", result)
 		}
-	}
+	})
+
+	t.Run("invalid", func(t *testing.T) {
+		badPasswords := [...]string{"Tddfdafadfasdf", "31341421241", "TTTddafadfadfa!"}
+
+		for i, password := range badPasswords {
+			if result, _ := isValidPassword(password); result {
+				t.Errorf("expected: false (%s) and received: %t",
+					badPasswords[i], !result)
+			}
+		}
+	})
+
 }
 
 func TestIsValidEmail(t *testing.T) {
-	// TODO: add a file of good and bad email examples to run against
-	if got, _ := isValidEmail("test"); got {
-		log.Fatalf("Expected: False Received: %t", got)
-	}
 
-	if got, _ := isValidEmail("test@test.com"); !got {
-		log.Fatalf("Expected: True (%s) Received: %t", "test@test.com", got)
-	}
+	t.Run("invalid", func(t *testing.T) {
+		if got, _ := isValidEmail("test"); got {
+			t.Errorf("accepted invalid email - %v", "test")
+		}
+	})
+
+	t.Run("valid", func(t *testing.T) {
+		if got, _ := isValidEmail("test@test.com"); !got {
+			t.Errorf("failed to allow a valid email - %v", "test@test.com")
+		}
+	})
+
 }
 
 func TestAllow(t *testing.T) {
 
-	result, err := auth.allow(testCookie)
-	if err != nil && !result {
-		log.Fatalf("Failed to determine whether authorized access (%v)", err)
-	}
-	if !result {
-		log.Fatalf("Failed authorization. Expected: true Received: %t", result)
-	}
+	t.Run("goodJWT", func(t *testing.T) {
+		result, err := auth.allow(testCookie)
+		if err != nil && !result {
+			t.Errorf("failed to authenticate properly encrypted JWT - %v", err)
+		}
+	})
+
+	t.Run("badJWT", func(t *testing.T) {
+		result, err := auth.allow("reallyPoorJWT")
+		if err != nil && result {
+			t.Errorf("failed authorization. expected: false received: %t", result)
+		}
+	})
 }
 
 func TestRedis(t *testing.T) {
 	// test pass if unable to connect to Redis
 	_, err := auth.keyStore.Ping().Result()
 	if err != nil {
-		t.SkipNow()
+		t.Skipf("failed to connect to redis - %v", err)
 	}
 
-	jwt, err := auth.encryptJWT([]byte(testJWT))
+	jwt, err := auth.encryptJWT([]byte(JSON))
 	if err != nil {
-		log.Fatalf("Unable to generate encrypted JWT for test (%v)", err)
+		t.Fatalf("failed to generate encrypted jwt - %v", err)
 	}
 
 	t.Run("Add", func(t *testing.T) {
 		// check add
 		_, err = auth.keyStore.Set(jwt, "admin", 0).Result()
 		if err != nil {
-			log.Fatalf("Failed to set key-value \"%s\":\"admin\"", jwt)
+			t.Errorf("failed to set key-value \"%s\":\"admin\"", jwt)
 		}
 	})
 
@@ -241,7 +256,8 @@ func TestRedis(t *testing.T) {
 	t.Run("Delete", func(t *testing.T) {
 		num, err := auth.keyStore.Del(jwt).Result()
 		if (err != nil) || (num != 1) {
-			log.Fatalf("Failed to delete key-value \"%s\":\"admin", jwt)
+			t.Logf("redis delete failed (%v)", err)
+			t.Fail()
 		}
 	})
 
@@ -259,5 +275,4 @@ func TestRedis(t *testing.T) {
 			log.Fatalf("Failed to timeout key-value \"%s\":\"admin\"", jwt)
 		}
 	})
-
 }
